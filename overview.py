@@ -6,16 +6,18 @@ import time
 from . import overview_queries
 from . import data_handle
 
-#쿼리 리스트를 반환
-def get_query_format(_granuality,_nodetype):
+
+# 쿼리 리스트를 반환
+def get_query_format(_granuality, _nodetype):
     nowtime = datetime.datetime.now()
     servertime = nowtime - datetime.timedelta(hours=9)
     stime = servertime - datetime.timedelta(minutes=60)
     interval_e = servertime.isoformat()
     interval_s = stime.isoformat()
-    return [_granuality,interval_s,interval_e,_nodetype]
+    return [_granuality, interval_s, interval_e, _nodetype]
 
-#jvm overview kpi를 반환
+
+# jvm overview kpi를 반환
 def get_jvm_overview_kpi(query_format):
     query_format[0] = "hour"
     query = overview_queries.query_jvm_overview % (tuple(query_format))
@@ -24,18 +26,19 @@ def get_jvm_overview_kpi(query_format):
 
     data_handle.add_percent(metric_list)
 
-    dictresponse = data_handle.get_kpi_json({},metric_list)
+    dictresponse = data_handle.get_kpi_json({}, metric_list)
     return dictresponse
 
-#jvm overview를 반환
+
+# jvm overview를 반환
 def get_jvm_overview(nodename):
     print("jvm overview function in!!")
-    query_format = get_query_format('minute',nodename)
+    query_format = get_query_format('minute', nodename)
 
     query = overview_queries.query_jvm_overview % (tuple(query_format))
     json_response = data_handle.get_data_from_druid(query)
 
-    metric_list = data_handle.make_json({},json_response)
+    metric_list = data_handle.make_json({}, json_response)
     start_time = time.clock()
 
     data_handle.add_percent(metric_list)
@@ -43,13 +46,14 @@ def get_jvm_overview(nodename):
     kpiresponse = get_jvm_overview_kpi(query_format)
     for k in kpiresponse.keys():
         if k in metric_list:
-            for ik,iv in kpiresponse[k].items():
+            for ik, iv in kpiresponse[k].items():
                 if ik not in metric_list[k]:
                     metric_list[k][ik] = iv
 
     return metric_list
 
-#node overview kpi 반환
+
+# node overview kpi 반환
 def get_node_overview_kpi(query_format):
     query_format[0] = "hour"
     print(query_format)
@@ -71,7 +75,8 @@ def get_node_overview_kpi(query_format):
 
     return dictresponse
 
-#node overview : jvm,kpi....를 반환
+
+# node overview : jvm,kpi....를 반환
 def get_node_overview(nodetype):
     query_format = get_query_format('minute', nodetype)
 
@@ -103,45 +108,53 @@ def get_node_overview(nodetype):
     final_metrics_list = data_handle.get_final_json(metric_list)
 
     t = time.clock() - start_time
-    print(nodetype," overview takes...")
+    print(nodetype, " overview takes...")
     print(t, "seconds")
     return final_metrics_list
 
-#각 노드의 overview 반환
+
+# 각 노드의 overview 반환
 def get_broker_overview(request):
     nodetype = 'druid/dev/broker'
     overview_data = get_node_overview(nodetype)
     return HttpResponse(json.dumps(overview_data, indent=4, sort_keys=True))
+
 
 def get_historical_overview(request):
     nodetype = 'druid/dev/historical'
     overview_data = get_node_overview(nodetype)
     return HttpResponse(json.dumps(overview_data, indent=4, sort_keys=True))
 
+
 def get_coordinator_overview(request):
     nodetype = 'druid/dev/coordinator'
     overview_data = get_node_overview(nodetype)
     return HttpResponse(json.dumps(overview_data, indent=4, sort_keys=True))
+
 
 def get_overlord_overview(request):
     nodetype = 'druid/dev/overlord'
     overview_data = get_node_overview(nodetype)
     return HttpResponse(json.dumps(overview_data, indent=4, sort_keys=True))
 
+
 def get_middleManager_overview(request):
     nodetype = 'druid/dev/middleManager'
     overview_data = get_node_overview(nodetype)
     return HttpResponse(json.dumps(overview_data, indent=4, sort_keys=True))
 
-#전체 노드 overview 반환
+
+# 전체 노드 overview 반환
 def get_overview_all(request):
-    nodelist = ['druid/dev/broker',"druid/dev/historical","druid/dev/coordinator","druid/dev/middleManager","druid/dev/overlord"]
+    nodelist = ['druid/dev/broker', "druid/dev/historical", "druid/dev/coordinator", "druid/dev/middleManager",
+                "druid/dev/overlord"]
     overview_data = {}
     for nodetype in nodelist:
         overview_data.update(get_node_overview(nodetype))
     return HttpResponse(json.dumps(overview_data))
 
-#전체 노드 리스트 반환
+
+# 전체 노드 리스트 반환
 def get_node_list(request):
     nowtime = datetime.datetime.now()
     servertime = nowtime - datetime.timedelta(hours=9)
@@ -173,6 +186,7 @@ def get_node_list(request):
 
     return HttpResponse(json.dumps(node_list))
 
+
 def postjson(request):
     nowtime = datetime.datetime.now()
     servertime = nowtime - datetime.timedelta(hours=9)
@@ -181,20 +195,21 @@ def postjson(request):
     interval_s = stime.isoformat()
 
     query = {}
-    query["server"] = "localhost"
-    query["port"] = "8083"
-    query["node"] = "druid/dev/historical"
-    query["start_time"] = interval_s
-    query["end_time"] = interval_e
-    query["granuality"] = "minute"
+    query["start"] = interval_s
+    query["end"] = interval_e
+    # query["node"] = "druid/dev/historical"
+    # query["start_time"] = interval_s
+    # query["end_time"] = interval_e
+    # query["granuality"] = "minute"
     response = data_handle.postdata(query)
     print(response)
     return HttpResponse(json.dumps(response))
 
+
 def test(request):
     st = datetime.datetime(2018, 8, 6, 5, 0, 0, 0)
     et = st - datetime.timedelta(minutes=61)
-    query_format = ["hour",et.isoformat(),st.isoformat(),"druid/dev/broker"]
+    query_format = ["hour", et.isoformat(), st.isoformat(), "druid/dev/broker"]
     query = overview_queries.query_broker_overview % (tuple(query_format))
     json_response = data_handle.get_data_from_druid(query)
     print(json_response)

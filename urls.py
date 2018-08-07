@@ -18,5 +18,6 @@ urlpatterns = [
     # path('detail/middleManager', detailview.get_middleManager_detailview),
     path('detail/post', detailview.request_handle),
     path('nodelist', overview.get_node_list),
+    path('detail/nodelist',detailview.get_node_list)
     #path('metric', overview.get_metriclist),
 ]

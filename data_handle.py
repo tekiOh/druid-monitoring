@@ -127,7 +127,7 @@ def add_percent(metric_list):
     return
 def postdata(query):
     headers = {'Content-Type': 'application/json'}
-    url = urllib.request.Request(url='http://localhost:8000/home/detail/post', data=(str(query).encode('utf-8')), headers=headers)
+    url = urllib.request.Request(url='http://localhost:8000/home/detail/nodelist', data=(str(query).encode('utf-8')), headers=headers)
     response = urllib.request.urlopen(url)
     print("request success!!!")
     json_response = json.loads(response.read().decode("utf-8"))
