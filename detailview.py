@@ -6,7 +6,6 @@ import time
 from . import detailview_quries
 from . import data_handle
 
-
 def get_detailview_data(query):
     json_response = data_handle.get_data_from_druid(query)
     metric_list = data_handle.make_json({}, json_response)
@@ -59,3 +58,36 @@ def request_handle(request):
             return HttpResponse(json.dumps(get_detailview_middleManager(query_format), indent=4, sort_keys=True))
 
         return HttpResponse(json.dumps({'success' : True}))
+
+
+def get_node_list(request):
+    body_unicode = request.body.decode('utf-8')
+    body_unicode = body_unicode.replace("'", "\"")
+    body = json.loads(body_unicode)
+    print(body)
+
+    query_format = [body["start"], body["end"]]
+
+    start_time = time.clock()
+
+    query = detailview_quries.query_get_node_list % (tuple(query_format))
+    json_response = data_handle.get_data_from_druid(query)
+
+    node_list = {}
+    for j in json_response:
+        ip = j["event"]["host"].split(':')[0]
+        port = j["event"]["host"].split(':')[-1]
+        if ip not in node_list:
+            node_list[ip] = {}
+        if j["event"]["service"] not in node_list[ip]:
+            node_list[ip][j["event"]["service"]] = []
+        if port not in node_list[ip][j["event"]["service"]]:
+            node_list[ip][j["event"]["service"]].append(port)
+    t = time.clock() - start_time
+    print("[get_node_list] takes...")
+    print(t, "seconds")
+
+    print(node_list)
+
+    return HttpResponse(json.dumps(node_list))
+

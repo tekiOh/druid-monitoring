@@ -482,3 +482,83 @@ query_middleManager_detailview = '''
       }
     }
 '''
+
+query_get_node_list = '''
+{
+      "queryType": "groupBy",
+      "dataSource": {
+        "type": "table",
+        "name": "druid_kafka_emitter_01"
+      },
+      "granularity": "year",
+      "intervals": [
+        "%s/%s"
+      ],
+      "dimensions": [
+        {
+          "type": "default",
+          "dimension": "host",
+          "outputName": "host"
+        },
+        {
+          "type": "default",
+          "dimension": "service",
+          "outputName": "service"
+        },
+        {
+          "type": "default",
+          "dimension": "metric",
+          "outputName": "metric"
+        }
+      ],
+      "filter": {
+        "type": "and",
+        "fields": [
+          {
+            "type": "in",
+            "dimension": "metric",
+            "values": [
+                "jvm/gc/mem/used"
+            ]
+          }
+        ]
+      },
+      "aggregations": [
+        {
+          "type": "sum",
+          "name": "value_sum",
+          "fieldName": "value",
+          "inputType": "double"
+        },
+        {
+          "type": "sum",
+          "name": "count_sum",
+          "fieldName": "count",
+          "inputType": "double"
+        }
+      ],
+      "postAggregations": [
+        {
+          "type": "arithmetic",
+          "name": "AVG(value)",
+          "fn": "/",
+          "fields": [
+            {
+              "type": "fieldAccess",
+              "name": "value_sum",
+              "fieldName": "value_sum"
+            },
+            {
+              "type": "fieldAccess",
+              "name": "count_sum",
+              "fieldName": "count_sum"
+            }
+          ]
+        }
+      ],
+      "limitSpec": {
+        "type": "default",
+        "limit": 100000
+      }
+    }
+'''
