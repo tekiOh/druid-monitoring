@@ -618,7 +618,7 @@ query_get_node_list = '''
         "type": "table",
         "name": "druid_kafka_emitter_01"
       },
-      "granularity": "hour",
+      "granularity": "year",
       "intervals": [
         "%s/%s"
       ],

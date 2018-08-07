@@ -10,16 +10,8 @@ from . import data_handle
 def get_detailview_data(query):
     json_response = data_handle.get_data_from_druid(query)
     metric_list = data_handle.make_json({}, json_response)
-    for v in metric_list.values():
-        key_list = list(v.keys())
-        for i in range(0, len(key_list)):
-            for j in range(i + 1, len(key_list)):
-                splti = key_list[i].split('_')
-                spltj = key_list[j].split('_')
-                if splti[:-1] == spltj[:-1] and splti[0] == 'jvm' and spltj[0] == 'jvm':
-                    for f, s in zip(v[key_list[i]], v[key_list[j]]):
-                        s['percent'] = round((s['avg'] / (f['avg'] + 0.000000001)) * 100, 1)
-                    break
+
+    data_handle.add_percent(metric_list)
 
     final_metrics_list = data_handle.get_final_json(metric_list)
     return final_metrics_list

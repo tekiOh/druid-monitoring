@@ -59,8 +59,6 @@ def get_kpi_json(kpi_json, data):
 
 
 def get_final_json(data):
-    print("final data" * 10)
-    # print(data)
     final_metrics_list = {}
     for k, v in data.items():
         # print(k)
@@ -68,8 +66,6 @@ def get_final_json(data):
             final_metrics_list[k] = {}
         for ik, iv in v.items():
             metric_name = ik.split('/kpi')[0]
-            # print(ik)
-            # print(metric_name)
             if metric_name not in final_metrics_list[k]:
                 final_metrics_list[k][metric_name] = {}
                 final_metrics_list[k][metric_name]['timestamp'] = []
@@ -114,6 +110,21 @@ def get_final_json(data):
 
     return final_metrics_list
 
+def add_percent(metric_list):
+    for v in metric_list.values():
+        key_list = list(v.keys())
+        for i in range(0, len(key_list)):
+            for j in range(i + 1, len(key_list)):
+                if key_list[i].split('/')[:-1] == key_list[j].split('/')[:-1]:
+                    for f, s in zip(v[key_list[i]], v[key_list[j]]):
+                        s['percent'] = round((s['avg'] / f['avg']) * 100, 1)
+                    break
+
+    for v in metric_list.values():
+        for metric in ['jvm/bufferpool/capacity', 'jvm/gc/mem/max', 'jvm/mem/max', 'jvm/pool/max']:
+            v.pop(metric, None)
+
+    return
 def postdata(query):
     headers = {'Content-Type': 'application/json'}
     url = urllib.request.Request(url='http://localhost:8000/home/detail/post', data=(str(query).encode('utf-8')), headers=headers)

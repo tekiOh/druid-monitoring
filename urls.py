@@ -10,7 +10,7 @@ urlpatterns = [
     path('overview/overlord', overview.get_overlord_overview),
     path('overview/middleManager', overview.get_middleManager_overview),
     path('overview/post', overview.postjson),
-    path('test',overview.test),
+    #path('test',overview.test),
     # path('detail/broker', detailview.get_broker_detailview),
     # path('detail/historical', detailview.get_historical_detailview),
     # path('detail/coordinator', detailview.get_coordinator_detailview),
@@ -18,5 +18,5 @@ urlpatterns = [
     # path('detail/middleManager', detailview.get_middleManager_detailview),
     path('detail/post', detailview.request_handle),
     path('nodelist', overview.get_node_list),
-    path('metric', overview.get_metriclist),
+    #path('metric', overview.get_metriclist),
 ]
