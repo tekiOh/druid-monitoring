@@ -1,0 +1,11 @@
+.__pycache__
+__pycache__/
+
+.migrations
+migrations/
+
+__init__.py
+admin.py
+apps.py
+models.py
+tests.py
