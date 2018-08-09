@@ -10,10 +10,16 @@ from . import data_handle
 def get_detailview_data(query):
     json_response = data_handle.get_data_from_druid(query)
     metric_list = data_handle.make_json({}, json_response)
-
+    print('*'*100)
+    print(json.dumps(metric_list, indent=4, sort_keys=True))
+    # print('*' * 100)
     data_handle.add_percent(metric_list)
-
-    final_metrics_list = data_handle.get_final_json(metric_list)
+    print('*' * 100)
+    print(json.dumps(metric_list, indent=4, sort_keys=True))
+    # print('*' * 100)
+    final_metrics_list = data_handle.get_detail_final_json(metric_list)
+    print('*' * 100)
+    print(json.dumps(final_metrics_list, indent=4, sort_keys=True))
     return final_metrics_list
 
 

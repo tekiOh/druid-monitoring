@@ -37,7 +37,7 @@ def get_jvm_overview(nodename):
 
     query = overview_queries.query_jvm_overview % (tuple(query_format))
     json_response = data_handle.get_data_from_druid(query)
-
+    #print(json.dumps(json_response, indent=4, sort_keys=True))
     metric_list = data_handle.make_json({}, json_response)
     start_time = time.clock()
 
@@ -190,13 +190,17 @@ def get_node_list(request):
 def postjson(request):
     nowtime = datetime.datetime.now()
     servertime = nowtime - datetime.timedelta(hours=9)
-    stime = servertime - datetime.timedelta(hours=1)
+    stime = servertime - datetime.timedelta(minutes=10)
     interval_e = servertime.isoformat()
     interval_s = stime.isoformat()
 
     query = {}
-    query["start"] = interval_s
-    query["end"] = interval_e
+    query["start_time"] = interval_s
+    query["end_time"] = interval_e
+    query["node"] = 'druid/dev/broker'
+    query["server"] = 'localhost'
+    query["port"] = '8082'
+    query["granuality"] = 'minute'
     # query["node"] = "druid/dev/historical"
     # query["start_time"] = interval_s
     # query["end_time"] = interval_e
