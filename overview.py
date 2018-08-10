@@ -8,13 +8,13 @@ from . import data_handle
 
 
 # 쿼리 리스트를 반환
-def get_query_format(_granuality, _nodetype):
+def get_query_format(_granularity, _nodetype):
     nowtime = datetime.datetime.now()
     servertime = nowtime - datetime.timedelta(hours=9)
     stime = servertime - datetime.timedelta(minutes=60)
     interval_e = servertime.isoformat()
     interval_s = stime.isoformat()
-    return [_granuality, interval_s, interval_e, _nodetype]
+    return [_granularity, interval_s, interval_e, _nodetype]
 
 
 # jvm overview kpi를 반환
@@ -200,7 +200,7 @@ def postjson(request):
     query["node"] = 'druid/dev/broker'
     query["server"] = 'localhost'
     query["port"] = '8082'
-    query["granuality"] = 'minute'
+    query["granularity"] = 'minute'
     # query["node"] = "druid/dev/historical"
     # query["start_time"] = interval_s
     # query["end_time"] = interval_e

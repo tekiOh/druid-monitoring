@@ -10,16 +10,8 @@ from . import data_handle
 def get_detailview_data(query):
     json_response = data_handle.get_data_from_druid(query)
     metric_list = data_handle.make_json({}, json_response)
-    print('*'*100)
-    print(json.dumps(metric_list, indent=4, sort_keys=True))
-    # print('*' * 100)
     data_handle.add_percent(metric_list)
-    print('*' * 100)
-    print(json.dumps(metric_list, indent=4, sort_keys=True))
-    # print('*' * 100)
     final_metrics_list = data_handle.get_detail_final_json(metric_list)
-    print('*' * 100)
-    print(json.dumps(final_metrics_list, indent=4, sort_keys=True))
     return final_metrics_list
 
 
@@ -55,7 +47,7 @@ def request_handle(request):
         body = json.loads(body_unicode)
         print(body)
         nodetype = body['node']
-        query_format = [body["granuality"], body["start_time"],
+        query_format = [body["granularity"], body["start_time"],
                         body["end_time"], body["node"],
                         body["server"] + ":" + body["port"]]
 
@@ -104,3 +96,14 @@ def get_node_list(request):
         print(node_list)
 
     return HttpResponse(json.dumps(node_list))
+
+def test(request):
+    nowtime = datetime.datetime.now()
+    servertime = nowtime - datetime.timedelta(hours=9)
+    stime = servertime - datetime.timedelta(minutes=60)
+    interval_e = servertime.isoformat()
+    interval_s = stime.isoformat()
+    query_format = ["minute", interval_s,
+                    interval_e,'druid/dev/broker',
+                    'localhost:8082']
+    return HttpResponse(json.dumps(get_detailview_broker(query_format), indent=4, sort_keys=True))
